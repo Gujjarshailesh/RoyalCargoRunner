@@ -156,7 +156,7 @@ MONGODB_URL=mongodb://127.0.0.1:27017/royalCargoRunner
 
 # JWT
 # JWT secret key
-JWT_SECRET=thisisasamplesecret
+JWT_SECRET=e0a3754c3eb25db2fa902c90cd721928032e90f6060c4c4858d33a452094072a
 # Number of minutes after which an access token expires
 JWT_ACCESS_EXPIRATION_MINUTES=30
 # Number of days after which a refresh token expires
