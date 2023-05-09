@@ -1,11 +1,9 @@
-# RESTful API Node Server Boilerplate
+# Royal cargo runner 
 
 [![Build Status](https://travis-ci.org/Gujjarshailesh/RoyalCargoRunner.svg?branch=master)](https://travis-ci.org/RoyalCargoRunner/RoyalCargoRunner)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
-A boilerplate/starter project for quickly building RESTful APIs using Node.js, Express, and Mongoose.
-
-By running a single command, you will get a production-ready Node.js app installed and fully configured on your machine. The app comes with many built-in features, such as authentication using JWT, request validation, unit and integration tests, continuous integration, docker support, API documentation, pagination, etc. For more details, check the features list below.
+The app comes with many built-in features, such as authentication using JWT, request validation, unit and integration tests, continuous integration, docker support, API documentation, pagination, etc. For more details, check the features list below.
 
 ## Quick Start
 
