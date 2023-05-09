@@ -6,6 +6,23 @@ const ApiError = require('../utils/ApiError');
 const { tokenTypes } = require('../config/tokens');
 
 /**
+ * Device Registration
+ * @param {string} userType
+ * @param {string} phone
+ * @param {string} deviceToken
+ * @returns
+ */
+const registration = async (body) => {
+  const model = {
+    phone: body.phone,
+    deviceToken: body.deviceToken,
+    role:body.userType,
+    OTP: 123456
+  }
+  return await userService.createUser(model)
+};
+
+/**
  * Login with username and password
  * @param {string} email
  * @param {string} password
@@ -91,6 +108,7 @@ const verifyEmail = async (verifyEmailToken) => {
 };
 
 module.exports = {
+  registration,
   loginUserWithEmailAndPassword,
   logout,
   refreshAuth,

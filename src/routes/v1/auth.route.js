@@ -6,12 +6,14 @@ const auth = require('../../middlewares/auth');
 
 const router = express.Router();
 
-router.post('/register', validate(authValidation.register), authController.register);
+router.post('/registration', validate(authValidation.registration), authController.registration);
+router.post('/verifyOTP', validate(authValidation.verifyOtp), authController.verifyOTP);
+router.post('/resendOTP', validate(authValidation.resentOtp), authController.resendOTP);
 router.post('/login', validate(authValidation.login), authController.login);
 router.post('/logout', validate(authValidation.logout), authController.logout);
 router.post('/refresh-tokens', validate(authValidation.refreshTokens), authController.refreshTokens);
-router.post('/forgot-password', validate(authValidation.forgotPassword), authController.forgotPassword);
-router.post('/reset-password', validate(authValidation.resetPassword), authController.resetPassword);
+router.post('/forgot-number', validate(authValidation.forgotPassword), authController.forgotPassword);
+//router.post('/reset-password', validate(authValidation.resetPassword), authController.resetPassword);
 router.post('/send-verification-email', auth(), authController.sendVerificationEmail);
 router.post('/verify-email', validate(authValidation.verifyEmail), authController.verifyEmail);
 
@@ -23,12 +25,11 @@ module.exports = router;
  *   name: Auth
  *   description: Authentication
  */
-
 /**
  * @swagger
- * /auth/register:
+ * /auth/registration:
  *   post:
- *     summary: Register as user
+ *     summary: Device Registration
  *     tags: [Auth]
  *     requestBody:
  *       required: true
@@ -37,39 +38,81 @@ module.exports = router;
  *           schema:
  *             type: object
  *             required:
- *               - name
- *               - email
- *               - password
+ *               - userType
+ *               - phone
+ *               - deviceToken
  *             properties:
- *               name:
+ *               userType:
  *                 type: string
- *               email:
- *                 type: string
- *                 format: email
+ *                 description:  Must be send Driver/Customer 
+ *               phone:
+ *                 type: number
  *                 description: must be unique
- *               password:
+ *               deviceToken:
  *                 type: string
- *                 format: password
- *                 minLength: 8
- *                 description: At least one number and one letter
+ *                 description: must be unique
  *             example:
- *               name: fake name
- *               email: fake@example.com
- *               password: password1
+ *               userType: Driver
+ *               phone: 9876543210
+ *               deviceToken: 740f4707bebcf74f9b7c25d48e335895f6aa01d
  *     responses:
- *       "201":
- *         description: Created
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 user:
- *                   $ref: '#/components/schemas/User'
- *                 tokens:
- *                   $ref: '#/components/schemas/AuthTokens'
- *       "400":
- *         $ref: '#/components/responses/DuplicateEmail'
+ *       "200":
+ *         description: User profile has been created.
+ */
+/**
+ * @swagger
+ * /auth/verifyOTP:
+ *   post:
+ *     summary: Verify OTP
+ *     description: Default OTP is 123456",
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - userType
+ *               - OTP
+ *             properties:
+ *               userId:
+ *                 type: string
+ *               OTP:
+ *                 type: number
+ *                 description: Min-6 And Max-6 Numbers*              
+ *             example:
+ *               userId: String
+ *               OTP: 123457
+ *     responses:
+ *       "200":
+ *         description: OTP verification
+ */
+
+/**
+ * @swagger
+ * /auth/resendOtp:
+ *   post:
+ *     summary: Resend OTP
+  *     description: Default resend OTP is 111111
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - userType
+ *               - OTP
+ *             properties:
+ *               userId:
+ *                 type: string                  
+ *             example:
+ *               userId: String
+ *     responses:
+ *       "200":
+ *         description: OTP verification
  */
 
 /**

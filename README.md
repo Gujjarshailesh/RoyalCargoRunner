@@ -29,7 +29,7 @@ Clone the repo:
 
 ```bash
 git clone --depth 1 https://github.com/Gujjarshailesh/RoyalCargoRunner.git
-cd node-express-boilerplate
+cd RoyalCargoRunner
 npx rimraf ./.git
 ```
 

@@ -6,44 +6,139 @@ const { roles } = require('../config/roles');
 
 const userSchema = mongoose.Schema(
   {
-    name: {
+    fullName: {
       type: String,
-      required: true,
       trim: true,
     },
     email: {
       type: String,
-      required: true,
-      unique: true,
       trim: true,
       lowercase: true,
-      validate(value) {
-        if (!validator.isEmail(value)) {
-          throw new Error('Invalid email');
-        }
-      },
     },
     password: {
       type: String,
-      required: true,
       trim: true,
-      minlength: 8,
-      validate(value) {
-        if (!value.match(/\d/) || !value.match(/[a-zA-Z]/)) {
-          throw new Error('Password must contain at least one letter and one number');
-        }
-      },
-      private: true, // used by the toJSON plugin
+    },
+    phone: {
+      type: Number,
+      trim: true,
+    },
+    address: {
+      type: String,
+      trim: true,
+    },
+    dateOfBirth: {
+      type: Date,
+      trim: true,
+    },
+    gender: {
+      type: String,
+      trim: true,
+    },
+    userLicence: {
+      type: String,
+      trim: true,
+    },
+    userLicenceVerified: {
+      type: Boolean,
+      trim: true,
+    },
+    userLicenceImage: {
+      type: String,
+      trim: true,
+    },
+    RCNumber: {
+      type: String,
+      trim: true,
+    },
+    RCImage: {
+      type: String,
+      trim: true,
+    },
+    RCVerified: {
+      type: Boolean,
+      trim: true,
+    },
+    aadharCardNumber: {
+      type: String,
+      trim: true,
+    },
+    aadharCardImage: {
+      type: String,
+      trim: true,
+    },
+    aadharCardVerified: {
+      type: Boolean,
+      trim: true,
+    },
+    PANNumber: {
+      type: String,
+      trim: true,
+    },
+    PANImage: {
+      type: String,
+      trim: true,
+    },
+    PANVerified: {
+      type: Boolean,
+      trim: true,
+    },
+    truckImage: {
+      type: String,
+      trim: true,
+    },
+    vehicleInfo: {
+      type: String,
+      trim: true,
+    },
+    accountType: {
+      type: Number,
+      trim: true,
+    },
+    companyName: {
+      type: String,
+      trim: true,
+    },
+    companyAddress: {
+      type: String,
+      trim: true,
+    },
+    companyWebsite: {
+      type: String,
+      trim: true,
+    },
+    paymentInformation: {
+      type: Number,
+      trim: true,
+    },
+    deviceToken: {
+      type: String,
+      trim: true,
+    },
+    OTP: {
+      type: Number,
+      trim: true,
     },
     role: {
       type: String,
-      enum: roles,
-      default: 'user',
+      enum: roles
     },
     isEmailVerified: {
       type: Boolean,
       default: false,
     },
+    isPhoneVerified: {
+      type: Boolean,
+      default: false,
+    },
+    isActive: {
+      type: Boolean,
+      default: false,
+    },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    }
   },
   {
     timestamps: true,
@@ -55,37 +150,18 @@ userSchema.plugin(toJSON);
 userSchema.plugin(paginate);
 
 /**
- * Check if email is taken
- * @param {string} email - The user's email
- * @param {ObjectId} [excludeUserId] - The id of the user to be excluded
+ * Check if phone is taken
+ * @param {string} phone - The user's phone
+ * @param {ObjectId} [excludeuserId] - The id of the user to be excluded
  * @returns {Promise<boolean>}
  */
-userSchema.statics.isEmailTaken = async function (email, excludeUserId) {
-  const user = await this.findOne({ email, _id: { $ne: excludeUserId } });
+userSchema.statics.isPhoneTaken = async function (phone, excludeuserId) {
+  const user = await this.findOne({ phone, _id: { $ne: excludeuserId } });
   return !!user;
 };
-
 /**
- * Check if password matches the user's password
- * @param {string} password
- * @returns {Promise<boolean>}
+ * @typedef user
  */
-userSchema.methods.isPasswordMatch = async function (password) {
-  const user = this;
-  return bcrypt.compare(password, user.password);
-};
+const user = mongoose.model('User', userSchema);
 
-userSchema.pre('save', async function (next) {
-  const user = this;
-  if (user.isModified('password')) {
-    user.password = await bcrypt.hash(user.password, 8);
-  }
-  next();
-});
-
-/**
- * @typedef User
- */
-const User = mongoose.model('User', userSchema);
-
-module.exports = User;
+module.exports = user;

@@ -5,14 +5,58 @@ components:
       properties:
         id:
           type: string
+        fullName:
+          type: string
         email:
           type: string
           format: email
-        name:
+        password:
           type: string
+        phone:
+          type: number
+        address:
+          type: string
+        dateOfBirth:
+          type: date
+        driverLicence:
+          type: string
+        driverLicenceVerified:
+          type: boolean
+        driverLicenceImage:
+          type: string
+        RCNumber:
+          type: string
+        RCImage:
+          type: string
+        RCVerified:
+          type: boolean
+        aadharCardNumber:
+          type: String
+        aadharCardImage:
+          type: string
+        aadharCardVerified:
+          type: boolean
+        PANNumber:
+          type: string
+        PANImage:
+          type: string
+        PANVerified:
+          type: boolean
+        truckImage:
+          type: string
+        vehicleInfo:
+          type: string
+        isEmailVerified:
+          type: boolean
+        isPhoneVerified:
+          type: boolean
+        isActive:
+          type: boolean
+        isDeleted:
+          type: boolean
         role:
           type: string
-          enum: [user, admin]
+          enum: [Driver, Customer]
       example:
         id: 5ebac534954b54139806c112
         email: fake@example.com

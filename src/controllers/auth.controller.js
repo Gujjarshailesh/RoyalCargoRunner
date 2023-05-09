@@ -1,12 +1,74 @@
 const httpStatus = require('http-status');
 const catchAsync = require('../utils/catchAsync');
 const { authService, userService, tokenService, emailService } = require('../services');
+const { User } = require('../models');
 
-const register = catchAsync(async (req, res) => {
-  debugger;
-  const user = await userService.createUser(req.body);
-  const tokens = await tokenService.generateAuthTokens(user);
-  res.status(httpStatus.CREATED).send({ user, tokens });
+const registration = catchAsync(async (req, res) => {    
+  const data = await authService.registration(req.body);
+  const tokens = await tokenService.generateAuthTokens(data); 
+  res.status(httpStatus.CREATED).send({
+    status:true,
+    message:'OTP has been sent.',
+    resultModel : {
+      _id: data._id,
+      token: tokens.token
+    }  
+  });
+});
+
+const verifyOTP = catchAsync(async (req, res) => {
+  const { OTP, userId } = req.body;
+  const user = await User.findOne({_id : userId});
+  if(user){
+    const userModel = await User.findOne({_id : userId, OTP: OTP});
+    if(userModel){
+      res.status(200).send({
+        status:true,
+        message:"OTP Matched"
+      });
+    } else {
+      res.status(400).send({
+        status:true,
+        message:"The OTP entered is incrrect."
+      });
+    }
+  } else {
+    res.status(400).send({
+      status:true,
+      message:"User not found"
+    });
+  }  
+});
+
+const resendOTP = catchAsync(async (req, res) => {
+  const { userId } = req.body;
+  const user = await User.findOne({_id : userId});
+  if(user) {
+    const updated = await User.findOneAndUpdate(
+      {
+        _id: user._id
+      },
+      {
+        OTP: 111111
+      }
+    );
+    if(updated){
+      res.status(200).send({
+        status:true,
+        message:"The OPT has been resent."
+      });
+    } else {
+      res.status(400).send({
+        status:true,
+        message:"The OTP entered is incrrect."
+      });
+    }
+  } else {
+    res.status(400).send({
+      status:true,
+      message:"User not found"
+    });
+  }  
 });
 
 const login = catchAsync(async (req, res) => {
@@ -49,7 +111,9 @@ const verifyEmail = catchAsync(async (req, res) => {
 });
 
 module.exports = {
-  register,
+  registration,
+  verifyOTP,
+  resendOTP,
   login,
   logout,
   refreshTokens,

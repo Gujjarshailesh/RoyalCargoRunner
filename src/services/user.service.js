@@ -1,21 +1,33 @@
 const httpStatus = require('http-status');
-const { User } = require('../models');
 const ApiError = require('../utils/ApiError');
+const { User } = require('../models');
 
 /**
- * Create a user
+ * Create a driver
  * @param {Object} userBody
  * @returns {Promise<User>}
  */
-const createUser = async (userBody) => {
-  if (await User.isEmailTaken(userBody.email)) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken');
-  }
-  return User.create(userBody);
+const createUser = async (body) => {
+  if (await User.isPhoneTaken(body.phone)) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Phone number already taken');
+  }  
+  return User.create(body);
 };
 
 /**
- * Query for users
+ * Check phone number is exist
+ * @param {Object} userBody
+ * @returns {Promise<User>}
+ */
+const isPhoneTaken = async (phone) => {
+  if (await User.isEmailTaken(phone)) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Phone number already taken');
+  }
+  return false;
+};
+
+/**
+ * Query for driver
  * @param {Object} filter - Mongo filter
  * @param {Object} options - Query options
  * @param {string} [options.sortBy] - Sort option in the format: sortField:(desc|asc)
@@ -23,9 +35,9 @@ const createUser = async (userBody) => {
  * @param {number} [options.page] - Current page (default = 1)
  * @returns {Promise<QueryResult>}
  */
-const queryUsers = async (filter, options) => {
-  const users = await User.paginate(filter, options);
-  return users;
+const querydriver = async (filter, options) => {
+  const driver = await User.paginate(filter, options);
+  return driver;
 };
 
 /**
@@ -81,7 +93,8 @@ const deleteUserById = async (userId) => {
 
 module.exports = {
   createUser,
-  queryUsers,
+  isPhoneTaken,
+  querydriver,
   getUserById,
   getUserByEmail,
   updateUserById,

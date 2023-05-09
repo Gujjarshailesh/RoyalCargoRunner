@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 const moment = require('moment');
 const httpStatus = require('http-status');
 const config = require('../config/config');
-const userService = require('./user.service');
+//const userService = require('./user.service');
 const { Token } = require('../models');
 const ApiError = require('../utils/ApiError');
 const { tokenTypes } = require('../config/tokens');
@@ -74,14 +74,8 @@ const generateAuthTokens = async (user) => {
   await saveToken(refreshToken, user.id, refreshTokenExpires, tokenTypes.REFRESH);
 
   return {
-    access: {
-      token: accessToken,
-      expires: accessTokenExpires.toDate(),
-    },
-    refresh: {
-      token: refreshToken,
-      expires: refreshTokenExpires.toDate(),
-    },
+    token: accessToken,
+    expires: accessTokenExpires.toDate(),
   };
 };
 
