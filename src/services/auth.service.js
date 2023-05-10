@@ -4,7 +4,8 @@ const userService = require('./user.service');
 const Token = require('../models/token.model');
 const ApiError = require('../utils/ApiError');
 const { tokenTypes } = require('../config/tokens');
-
+const { User } = require('../models');
+const fs = require("fs");
 /**
  * Device Registration
  * @param {string} userType
@@ -20,6 +21,80 @@ const registration = async (body) => {
     OTP: 123456
   }
   return await userService.createUser(model)
+};
+
+/**
+ * Driver Registration
+ * @param {string} body
+ * @returns
+ */
+const driverRegistration = async (req, res) => {  
+ // userLicenceImage
+  // RCImage, aadharCardImage, PANImage
+  var path = "./assets/user/" + req.body.id + "/";
+  await fs.promises.mkdir(path, { recursive: true });
+
+  // User Licence Image
+  let userLicenceImage = await fileUpload(req.body.userLicenceImage, path + "/" + Date.now() + "." + req.files.RCImage.mimetype
+    ? req.files.RCImage.mimetype.split("/")[1]
+    : "png");
+
+  // RC Image
+  let RCImage = await fileUpload(req.body.RCImage, path + "/" + Date.now() + "." + req.files.RCImage.mimetype
+    ? req.files.RCImage.mimetype.split("/")[1]
+    : "png");
+
+   // Aadhar Card Image
+   let aadharCardImage = await fileUpload(body.aadharCardImage, path + "/" + Date.now() + "." + req.files.aadharCardImage.mimetype
+   ? req.files.aadharCardImage.mimetype.split("/")[1]
+   : "png");
+
+    // PAN Image
+    let PANImage = await fileUpload(body.PANImage, path + "/" + Date.now() + "." + req.files.PANImage.mimetype
+    ? req.files.PANImage.mimetype.split("/")[1]
+    : "png");
+
+
+  let newUser = new User(
+    _.assign(
+      _.pick(req.body, [
+        "fullName",
+        "email",
+        "address",
+        "dateOfBirth",
+        "gender",
+        "userLicence",
+        "userLicenceVerified",
+        "RCNumber",
+        "RCVerified",
+        "aadharCardNumber",
+        "aadharCardVerified",
+        "PANNumber",
+        "PANVerified",
+        "truckImage",
+        "vehicleInfo"
+      ]),
+      {
+        userLicenceImage: userLicenceImage,
+        RCImage: RCImage,
+        aadharCardImage: aadharCardImage,
+        PANImage:PANImage
+      }
+    )
+  );
+  return await newUser.save()
+};
+
+var fileUpload = (image, path) => {
+  return new Promise((resolve, reject) => {
+    fs.writeFile(path, image, function (err) {
+      if (err) {
+        return reject({ path: undefined });
+      } else {
+        return resolve({ path });
+      }
+    });
+  });
 };
 
 /**
@@ -109,6 +184,7 @@ const verifyEmail = async (verifyEmailToken) => {
 
 module.exports = {
   registration,
+  driverRegistration,
   loginUserWithEmailAndPassword,
   logout,
   refreshAuth,

@@ -2,6 +2,7 @@ const httpStatus = require('http-status');
 const catchAsync = require('../utils/catchAsync');
 const { authService, userService, tokenService, emailService } = require('../services');
 const { User } = require('../models');
+const _ = require("lodash");
 
 const registration = catchAsync(async (req, res) => {    
   const data = await authService.registration(req.body);
@@ -16,12 +17,22 @@ const registration = catchAsync(async (req, res) => {
   });
 });
 
+const driverRegistration = catchAsync(async (req, res) => {    
+  const data = await authService.driverRegistration(req, res);
+  res.status(httpStatus.CREATED).send({
+    status:true,
+    message:'Driver registration has been completed successfully..',
+    data : data
+  });
+});
+
 const verifyOTP = catchAsync(async (req, res) => {
   const { OTP, userId } = req.body;
   const user = await User.findOne({_id : userId});
   if(user){
     const userModel = await User.findOne({_id : userId, OTP: OTP});
-    if(userModel){
+    if(userModel){      
+      await User.findOneAndUpdate({ _id: userModel._id }, { isPhoneVerified: true });
       res.status(200).send({
         status:true,
         message:"OTP Matched"
@@ -114,6 +125,7 @@ module.exports = {
   registration,
   verifyOTP,
   resendOTP,
+  driverRegistration,
   login,
   logout,
   refreshTokens,

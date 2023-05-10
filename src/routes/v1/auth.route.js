@@ -7,6 +7,7 @@ const auth = require('../../middlewares/auth');
 const router = express.Router();
 
 router.post('/registration', validate(authValidation.registration), authController.registration);
+router.post('/driver-registration', validate(authValidation.driverRegistration), authController.driverRegistration);
 router.post('/verifyOTP', validate(authValidation.verifyOtp), authController.verifyOTP);
 router.post('/resendOTP', validate(authValidation.resentOtp), authController.resendOTP);
 router.post('/login', validate(authValidation.login), authController.login);
@@ -20,10 +21,10 @@ router.post('/verify-email', validate(authValidation.verifyEmail), authControlle
 module.exports = router;
 
 /**
- * @swagger
- * tags:
- *   name: Auth
- *   description: Authentication
+  @swagger
+  tags:
+    name: Auth
+    description: Authentication
  */
 /**
  * @swagger
@@ -44,6 +45,7 @@ module.exports = router;
  *             properties:
  *               userType:
  *                 type: string
+ *                 enum: [Driver, Customer]
  *                 description:  Must be send Driver/Customer 
  *               phone:
  *                 type: number
@@ -52,13 +54,103 @@ module.exports = router;
  *                 type: string
  *                 description: must be unique
  *             example:
- *               userType: Driver
- *               phone: 9876543210
- *               deviceToken: 740f4707bebcf74f9b7c25d48e335895f6aa01d
+ *               userType: Driver/Customer
+ *               phone: xxxxxxxxxx
+ *               deviceToken: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
  *     responses:
  *       "200":
  *         description: User profile has been created.
  */
+
+/**
+ * @swagger
+ * /auth/driver-registration:
+ *   post:
+ *     summary: Driver Registration
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - id
+ *               - fullName
+ *               - email
+ *               - address
+ *               - dateOfBirth
+ *               - gender
+ *               - userLicence
+ *               - userLicenceVerified
+ *               - userLicenceImage
+ *               - RCNumber
+ *               - RCImage
+ *               - RCVerified
+ *               - aadharCardNumber
+ *               - aadharCardImage
+ *               - aadharCardVerified
+ *               - PANNumber
+ *               - PANImage
+ *               - PANVerified
+ *               - truckImage
+ *               - vehicleInfo
+ *             properties:
+ *               id:
+ *                 type: string
+ *               fullName:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               address:
+ *                 type: string
+ *               dateOfBirth:
+ *                 type: date
+ *               gender:
+ *                 type: string
+ *               userLicence:
+ *                 type: string
+ *               userLicenceVerified:
+ *                 type: boolean
+ *               userLicenceImage:
+ *                 type: string
+ *                 format: binary
+ *               RCNumber:
+ *                 type: string
+ *               RCImage:
+ *                 type: string
+ *                 format: binary
+ *               RCVerified:
+ *                 type: boolean
+ *               aadharCardNumber:
+ *                 type: string
+ *               aadharCardImage:
+ *                 type: string
+ *                 format: binary
+ *               aadharCardVerified:
+ *                 type: boolean
+ *               PANNumber:
+ *                 type: string
+ *               PANImage:
+ *                 type: string
+ *                 format: binary
+ *               PANVerified:
+ *                 type: boolean
+ *               truckImage:
+ *                 type: string
+ *                 format: binary
+ *               vehicleInfo:
+ *                 type: string             
+ *             example:
+ *               userId: String
+ *               OTP: 123457
+ *     responses:
+ *       "200":
+ *         description: OTP verification
+ *       "400":
+ *         description: Invalid input, object invalid
+ */
+
 /**
  * @swagger
  * /auth/verifyOTP:

@@ -9,6 +9,30 @@ const registration = {
   }),
 };
 
+const driverRegistration = {
+  body: Joi.object().keys({
+    id: Joi.string().required(),
+    fullName: Joi.string().required().max(255),
+    email: Joi.string().required().max(255),
+    address: Joi.string().required(),
+    dateOfBirth: Joi.string().required(),
+    gender: Joi.string().required().max(10),
+    userLicence: Joi.string().required().max(255),
+    userLicenceVerified: Joi.boolean().required(),
+    userLicenceImage: Joi.optional(),
+    RCNumber: Joi.string().required().max(255),
+    RCImage: Joi.optional(),
+    RCVerified: Joi.boolean().required(),
+    aadharCardNumber: Joi.string().required().max(16),
+    aadharCardImage: Joi.optional(),
+    aadharCardVerified: Joi.boolean().required(),
+    PANNumber: Joi.string().required().max(16),
+    PANImage: Joi.optional(),
+    PANVerified: Joi.boolean().required(),
+    truckImage: Joi.optional(),
+    vehicleInfo: Joi.string().required().max(255)
+  }),
+};
 const verifyOtp = {
   body: Joi.object().keys({
     userId: Joi.string().required(),
@@ -72,6 +96,7 @@ const verifyEmail = {
 
 module.exports = {
   registration,
+  driverRegistration,
   verifyOtp,
   resentOtp,
   register,

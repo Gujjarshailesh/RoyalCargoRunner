@@ -13,13 +13,15 @@ const { authLimiter } = require('./middlewares/rateLimiter');
 const routes = require('./routes/v1');
 const { errorConverter, errorHandler } = require('./middlewares/error');
 const ApiError = require('./utils/ApiError');
-
+const upload = require("express-fileupload");
 const app = express();
 
 if (config.env !== 'test') {
   app.use(morgan.successHandler);
   app.use(morgan.errorHandler);
 }
+// Upload Images
+app.use(upload())
 
 // set security HTTP headers
 app.use(helmet());
