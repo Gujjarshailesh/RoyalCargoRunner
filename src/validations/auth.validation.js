@@ -1,6 +1,9 @@
 const Joi = require('joi');
 const { password } = require('./custom.validation');
 
+/**
+ * Device registration API
+ */
 const registration = {
   body: Joi.object().keys({
     userType: Joi.string().required(),
@@ -9,6 +12,28 @@ const registration = {
   }),
 };
 
+/**
+ * Verify Otp API
+ */
+const verifyOtp = {
+  body: Joi.object().keys({
+    userId: Joi.string().required(),
+    OTP: Joi.number().min(6).required(),
+  }),
+};
+
+/**
+ * Resend Otp API
+ */
+const resentOtp = {
+  body: Joi.object().keys({
+    userId: Joi.string().required(),
+  }),
+};
+
+/**
+ * Driver Registration API
+ */
 const driverRegistration = {
   body: Joi.object().keys({
     id: Joi.string().required(),
@@ -33,18 +58,26 @@ const driverRegistration = {
     vehicleInfo: Joi.string().required().max(255)
   }),
 };
-const verifyOtp = {
+
+/**
+ * Customer Registration API
+ */
+const customerRegistration = {
   body: Joi.object().keys({
-    userId: Joi.string().required(),
-    OTP: Joi.number().min(6).required(),
+    id: Joi.string().required(),
+    fullName: Joi.string().required().max(255),
+    email: Joi.string().required().max(255),
+    address: Joi.string().required(),
+    dateOfBirth: Joi.string().required(),
+    gender: Joi.string().required().max(10),
+    accountType: Joi.string().required().max(255),
+    companyName: Joi.string().required(),
+    companyAddress: Joi.string().required().max(255),
+    companyWebsite: Joi.string().required().max(255),
+    paymentInformation: Joi.string().required().max(255),
   }),
 };
 
-const resentOtp = {
-  body: Joi.object().keys({
-    userId: Joi.string().required(),
-  }),
-};
 
 const register = {
   body: Joi.object().keys({
@@ -97,6 +130,7 @@ const verifyEmail = {
 module.exports = {
   registration,
   driverRegistration,
+  customerRegistration,
   verifyOtp,
   resentOtp,
   register,

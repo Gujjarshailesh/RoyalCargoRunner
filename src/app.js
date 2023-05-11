@@ -23,6 +23,9 @@ if (config.env !== 'test') {
 // Upload Images
 app.use(upload())
 
+// Static file upload path
+app.use(express.static(__dirname + '/public'));
+
 // set security HTTP headers
 app.use(helmet());
 
@@ -65,5 +68,8 @@ app.use(errorConverter);
 
 // handle error
 app.use(errorHandler);
+
+// Add this line to serve our index.html page
+app.use(express.static('public'));
 
 module.exports = app;

@@ -92,7 +92,7 @@ const userSchema = mongoose.Schema(
       trim: true,
     },
     accountType: {
-      type: Number,
+      type: String,
       trim: true,
     },
     companyName: {
@@ -108,7 +108,7 @@ const userSchema = mongoose.Schema(
       trim: true,
     },
     paymentInformation: {
-      type: Number,
+      type: String,
       trim: true,
     },
     deviceToken: {
@@ -148,7 +148,7 @@ const userSchema = mongoose.Schema(
 // add plugin that converts mongoose to json
 userSchema.plugin(toJSON);
 userSchema.plugin(paginate);
-
+userSchema.index({_id:1}, {collation: { locale: 'en', strength: 2}});
 /**
  * Check if phone is taken
  * @param {string} phone - The user's phone

@@ -6,8 +6,11 @@ const auth = require('../../middlewares/auth');
 
 const router = express.Router();
 
+router.get('/splash', authController.splash);
+router.get('/privacyPolicy', authController.privacyPolicy);
 router.post('/registration', validate(authValidation.registration), authController.registration);
 router.post('/driver-registration', validate(authValidation.driverRegistration), authController.driverRegistration);
+router.post('/customer-registration', validate(authValidation.customerRegistration), authController.customerRegistration);
 router.post('/verifyOTP', validate(authValidation.verifyOtp), authController.verifyOTP);
 router.post('/resendOTP', validate(authValidation.resentOtp), authController.resendOTP);
 router.post('/login', validate(authValidation.login), authController.login);
@@ -26,6 +29,35 @@ module.exports = router;
     name: Auth
     description: Authentication
  */
+
+
+
+/**
+ * @swagger
+ * /auth/splash:
+ *   get:
+ *     summary: Splash screen Api
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: false
+ *     responses:
+ *       "200":
+ *         description: This is a application splash screen content api.
+ */
+
+/**
+ * @swagger
+ * /auth/privacyPolicy:
+ *   get:
+ *     summary: Privacy Policy
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: false
+ *     responses:
+ *       "200":
+ *         description: This is a application privacy policy content api.
+ */
+
 /**
  * @swagger
  * /auth/registration:
@@ -60,95 +92,6 @@ module.exports = router;
  *     responses:
  *       "200":
  *         description: User profile has been created.
- */
-
-/**
- * @swagger
- * /auth/driver-registration:
- *   post:
- *     summary: Driver Registration
- *     tags: [Auth]
- *     requestBody:
- *       required: true
- *       content:
- *         multipart/form-data:
- *           schema:
- *             type: object
- *             required:
- *               - id
- *               - fullName
- *               - email
- *               - address
- *               - dateOfBirth
- *               - gender
- *               - userLicence
- *               - userLicenceVerified
- *               - userLicenceImage
- *               - RCNumber
- *               - RCImage
- *               - RCVerified
- *               - aadharCardNumber
- *               - aadharCardImage
- *               - aadharCardVerified
- *               - PANNumber
- *               - PANImage
- *               - PANVerified
- *               - truckImage
- *               - vehicleInfo
- *             properties:
- *               id:
- *                 type: string
- *               fullName:
- *                 type: string
- *               email:
- *                 type: string
- *               address:
- *                 type: string
- *               dateOfBirth:
- *                 type: date
- *               gender:
- *                 type: string
- *               userLicence:
- *                 type: string
- *               userLicenceVerified:
- *                 type: boolean
- *               userLicenceImage:
- *                 type: string
- *                 format: binary
- *               RCNumber:
- *                 type: string
- *               RCImage:
- *                 type: string
- *                 format: binary
- *               RCVerified:
- *                 type: boolean
- *               aadharCardNumber:
- *                 type: string
- *               aadharCardImage:
- *                 type: string
- *                 format: binary
- *               aadharCardVerified:
- *                 type: boolean
- *               PANNumber:
- *                 type: string
- *               PANImage:
- *                 type: string
- *                 format: binary
- *               PANVerified:
- *                 type: boolean
- *               truckImage:
- *                 type: string
- *                 format: binary
- *               vehicleInfo:
- *                 type: string             
- *             example:
- *               userId: String
- *               OTP: 123457
- *     responses:
- *       "200":
- *         description: OTP verification
- *       "400":
- *         description: Invalid input, object invalid
  */
 
 /**
@@ -209,9 +152,150 @@ module.exports = router;
 
 /**
  * @swagger
+ * /auth/driver-registration:
+ *   post:
+ *     summary: Driver Registration
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - id
+ *               - fullName
+ *               - email
+ *               - address
+ *               - dateOfBirth
+ *               - gender
+ *               - userLicence
+ *               - userLicenceVerified
+ *               - userLicenceImage
+ *               - RCNumber
+ *               - RCImage
+ *               - RCVerified
+ *               - aadharCardNumber
+ *               - aadharCardImage
+ *               - aadharCardVerified
+ *               - PANNumber
+ *               - PANImage
+ *               - PANVerified
+ *               - truckImage
+ *               - vehicleInfo
+ *             properties:
+ *               id:
+ *                 type: string
+ *               fullName:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               address:
+ *                 type: string
+ *               dateOfBirth:
+ *                 type: date
+ *                 description : Valid date format is [MM/DD/YYYY]
+ *               gender:
+ *                 type: string
+ *               userLicence:
+ *                 type: string
+ *               userLicenceVerified:
+ *                 type: boolean
+ *               userLicenceImage:
+ *                 type: string
+ *                 format: binary
+ *               RCNumber:
+ *                 type: string
+ *               RCImage:
+ *                 type: string
+ *                 format: binary
+ *               RCVerified:
+ *                 type: boolean
+ *               aadharCardNumber:
+ *                 type: string
+ *               aadharCardImage:
+ *                 type: string
+ *                 format: binary
+ *               aadharCardVerified:
+ *                 type: boolean
+ *               PANNumber:
+ *                 type: string
+ *               PANImage:
+ *                 type: string
+ *                 format: binary
+ *               PANVerified:
+ *                 type: boolean
+ *               truckImage:
+ *                 type: string
+ *                 format: binary
+ *               vehicleInfo:
+ *                 type: string             
+ *     responses:
+ *       "200":
+ *         description: Driver registration has been completed successfully.
+ *       "400":
+ *         description: Based on error
+ */
+/**
+ * @swagger
+ * /auth/customer-registration:
+ *   post:
+ *     summary: Customer Registration
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - id
+ *               - fullName
+ *               - email
+ *               - address
+ *               - dateOfBirth
+ *               - gender
+ *               - accountType
+ *               - companyName
+ *               - companyAddress
+ *               - companyWebsite
+ *               - paymentInformation
+ *             properties:
+ *               id:
+ *                 type: string
+ *               fullName:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               address:
+ *                 type: string
+ *               dateOfBirth:
+ *                 type: date
+ *                 description : Valid date format is [MM/DD/YYYY]
+ *               gender:
+ *                 type: string
+ *               accountType:
+ *                 type: string
+ *               companyName:
+ *                 type: string
+ *               companyAddress:
+ *                 type: string
+ *               companyWebsite:
+ *                 type: string
+ *               paymentInformation: 
+ *                 type: string
+ *     responses:
+ *       "200":
+ *         description: Customer registration has been completed successfully.
+ *       "400":
+ *         description: Invalid input, object invalid
+ */
+
+/**
+ * @swagger
  * /auth/login:
  *   post:
- *     summary: Login
+ *     summary: Login - Under Dvelopment
  *     tags: [Auth]
  *     requestBody:
  *       required: true
@@ -259,7 +343,7 @@ module.exports = router;
  * @swagger
  * /auth/logout:
  *   post:
- *     summary: Logout
+ *     summary: Logout - Under Dvelopment
  *     tags: [Auth]
  *     requestBody:
  *       required: true
@@ -285,7 +369,7 @@ module.exports = router;
  * @swagger
  * /auth/refresh-tokens:
  *   post:
- *     summary: Refresh auth tokens
+ *     summary: Refresh auth tokens 
  *     tags: [Auth]
  *     requestBody:
  *       required: true
@@ -315,7 +399,7 @@ module.exports = router;
  * @swagger
  * /auth/forgot-password:
  *   post:
- *     summary: Forgot password
+ *     summary: Forgot password - Under Dvelopment
  *     description: An email will be sent to reset password.
  *     tags: [Auth]
  *     requestBody:
@@ -343,7 +427,7 @@ module.exports = router;
  * @swagger
  * /auth/reset-password:
  *   post:
- *     summary: Reset password
+ *     summary: Reset password - Under Dvelopment
  *     tags: [Auth]
  *     parameters:
  *       - in: query

@@ -4,8 +4,21 @@ const userService = require('./user.service');
 const Token = require('../models/token.model');
 const ApiError = require('../utils/ApiError');
 const { tokenTypes } = require('../config/tokens');
-const { User } = require('../models');
+const { User, PrivacyPolicy } = require('../models');
+const mongoose = require('mongoose');
+
 const fs = require("fs");
+const _ = require("lodash");
+var moment = require('moment');
+
+/**
+ * Privacy policy content 
+ * @returns {Promise<PrivacyPolicy>}
+ */
+const privacyPolicyContent = async () => {
+  return await PrivacyPolicy.findOne({},{content:1}).limit(1);
+};
+
 /**
  * Device Registration
  * @param {string} userType
@@ -14,13 +27,20 @@ const fs = require("fs");
  * @returns
  */
 const registration = async (body) => {
-  const model = {
-    phone: body.phone,
-    deviceToken: body.deviceToken,
-    role:body.userType,
-    OTP: 123456
+  try {
+    const model = {
+      phone: body.phone,
+      deviceToken: body.deviceToken,
+      role:body.userType,
+      OTP: 123456
+    }
+    return await userService.createUser(model)
+  } catch (error) {
+    return res.status(400).json({
+      status: false,
+      message: error.message
+    });
   }
-  return await userService.createUser(model)
 };
 
 /**
@@ -29,39 +49,92 @@ const registration = async (body) => {
  * @returns
  */
 const driverRegistration = async (req, res) => {  
- // userLicenceImage
-  // RCImage, aadharCardImage, PANImage
-  var path = "./assets/user/" + req.body.id + "/";
+ try {
+  const user = await User.findById(mongoose.Types.ObjectId(req.body.id));
+  if(!user){
+    return res.status(400).json({
+      status: false,
+      message: "The driver could not be identified."
+    });
+  }
+  if(!user.isPhoneVerified){
+    return res.status(400).json({
+      status: false,
+      message: "Phone number is not validated, please verify your phone number."
+    });
+  }
+
+  var path = "./public/profile/" + req.body.id;
   await fs.promises.mkdir(path, { recursive: true });
+  if (!req.files.userLicenceImage.mimetype) return res.status(400).send ("No files were uploaded!!");
+  if (!req.files.RCImage.mimetype) return res.status(400).send ("No files were uploaded!!");
+  if (!req.files.aadharCardImage.mimetype) return res.status(400).send ("No files were uploaded!!");
+  if (!req.files.PANImage.mimetype) return res.status(400).send ("No files were uploaded!!");
+
+  // If does not have image mime type prevent from uploading
+  if (!/^image/.test(req.files.userLicenceImage.mimetype)) return res.status(400).send ({
+    status:false,
+    message:"Allow only image file!!"
+  });
+  if (!/^image/.test(req.files.RCImage.mimetype)) return res.status(400).send ({
+    status:false,
+    message:"Allow only image file!!"
+  });
+  if (!/^image/.test(req.files.aadharCardImage.mimetype)) return res.status(400).send ({
+    status:false,
+    message:"Allow only image file!!"
+  });
+  if (!/^image/.test(req.files.PANImage.mimetype)) return res.status(400).send ({
+    status:false,
+    message:"Allow only image file!!"
+  });
+  if (!/^image/.test(req.files.PANImage.mimetype)) return res.status(400).send ({
+    status:false,
+    message:"Allow only image file!!"
+  });
+  if (!/^image/.test(req.files.truckImage.mimetype)) return res.status(400).send ({
+    status:false,
+    message:"Allow only image file!!"
+  });
+
+  const toDateFormat = moment(new Date(req.body.dateOfBirth)).format("DD/DD/YYYY");
+  if(!moment(toDateFormat, "MM/DD/YYYY", true).isValid()) return res.status(400).send ({
+    status:false,
+    message:"Please enter valid date, Valid date format is [MM/DD/YYYY]"
+  });  
 
   // User Licence Image
-  let userLicenceImage = await fileUpload(req.body.userLicenceImage, path + "/" + Date.now() + "." + req.files.RCImage.mimetype
+  let userLicenceImage = await fileUpload(req.files.userLicenceImage, path + "/" + Date.now() + "." + (req.files.RCImage.mimetype
     ? req.files.RCImage.mimetype.split("/")[1]
-    : "png");
+    : "png"));
 
   // RC Image
-  let RCImage = await fileUpload(req.body.RCImage, path + "/" + Date.now() + "." + req.files.RCImage.mimetype
+  let RCImage = await fileUpload(req.files.RCImage, path + "/" + Date.now() + "." + (req.files.RCImage.mimetype
     ? req.files.RCImage.mimetype.split("/")[1]
-    : "png");
+    : "png"));
 
    // Aadhar Card Image
-   let aadharCardImage = await fileUpload(body.aadharCardImage, path + "/" + Date.now() + "." + req.files.aadharCardImage.mimetype
-   ? req.files.aadharCardImage.mimetype.split("/")[1]
-   : "png");
+   let aadharCardImage = await fileUpload(req.files.aadharCardImage, path + "/" + Date.now() + "." + (req.files.RCImage.mimetype
+    ? req.files.RCImage.mimetype.split("/")[1]
+    : "png"));
 
     // PAN Image
-    let PANImage = await fileUpload(body.PANImage, path + "/" + Date.now() + "." + req.files.PANImage.mimetype
-    ? req.files.PANImage.mimetype.split("/")[1]
-    : "png");
-
-
-  let newUser = new User(
+    let PANImage = await fileUpload(req.files.PANImage, path + "/" + Date.now() + "." + (req.files.PANImage.mimetype
+      ? req.files.RCImage.mimetype.split("/")[1]
+      : "png"));
+    // PAN Image
+    let truckImage = await fileUpload(req.files.truckImage, path + "/" + Date.now() + "." + (req.files.truckImage.mimetype
+      ? req.files.RCImage.mimetype.split("/")[1]
+      : "png"));
+  await User.updateOne(
+    {
+      _id: req.body.id
+    },
     _.assign(
       _.pick(req.body, [
         "fullName",
         "email",
         "address",
-        "dateOfBirth",
         "gender",
         "userLicence",
         "userLicenceVerified",
@@ -75,25 +148,78 @@ const driverRegistration = async (req, res) => {
         "vehicleInfo"
       ]),
       {
-        userLicenceImage: userLicenceImage,
-        RCImage: RCImage,
-        aadharCardImage: aadharCardImage,
-        PANImage:PANImage
+        userLicenceImage: _.replace(userLicenceImage, "./public/",""),
+        RCImage: _.replace(RCImage, "./public/",""),
+        aadharCardImage: _.replace(aadharCardImage, "./public/",""),
+        PANImage:_.replace(PANImage, "./public/",""),
+        truckImage:_.replace(truckImage, "./public/",""),
+        dateOfBirth : new Date(req.body.dateOfBirth+"Z")
       }
     )
   );
-  return await newUser.save()
+  return;
+ } catch (error) {
+  return res.status(400).json({
+    status:false,
+    message: error.message
+  });
+ }
 };
-
+/**
+ * Customer Registration
+ * @param {string} body
+ * @returns
+ */
+const customerRegistration = async (req, res) => {  
+  try {
+   const user = await User.findById(mongoose.Types.ObjectId(req.body.id));
+   if(!user){
+     return res.status(400).json({
+       status: false,
+       message: "The customer could not be identified."
+     });
+   }
+   if(!user.isPhoneVerified){
+     return res.status(400).json({
+       status: false,
+       message: "Phone number is not validated, please verify your phone number."
+     });
+   }
+ 
+   await User.updateOne(
+     {
+       _id: req.body.id
+     },
+     _.assign(
+       _.pick(req.body, [
+         "fullName",
+         "email",
+         "address",
+         "gender",
+         "accountType",
+         "companyName",
+         "companyAddress",
+         "companyWebsite",
+         "paymentInformation"
+       ]),
+       {
+         dateOfBirth : new Date(req.body.dateOfBirth+"Z")
+       }
+     )
+   );
+   return;
+  } catch (error) {
+   return res.status(400).json({
+     status:false,
+     message: error.message
+   });
+  }
+ };
 var fileUpload = (image, path) => {
   return new Promise((resolve, reject) => {
-    fs.writeFile(path, image, function (err) {
-      if (err) {
-        return reject({ path: undefined });
-      } else {
-        return resolve({ path });
-      }
-    });
+    // Move the uploaded image to our upload folder
+    image.mv(path);
+    return resolve(path);   
   });
 };
 
@@ -183,8 +309,10 @@ const verifyEmail = async (verifyEmailToken) => {
 };
 
 module.exports = {
+  privacyPolicyContent,
   registration,
   driverRegistration,
+  customerRegistration,
   loginUserWithEmailAndPassword,
   logout,
   refreshAuth,
